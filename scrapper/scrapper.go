@@ -9,7 +9,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// JobInfo includes each information of content
+// JobInfo includes contents of job card
 type JobInfo struct {
 	id       string
 	title    string
@@ -47,7 +47,7 @@ func GetPageNum(baseURL string) (pageNum int) {
 	return
 }
 
-// RequestJobInfoArray sends JabInfo type array to chanel
+// RequestJobInfoArray sends JobInfo type array to chanel
 func RequestJobInfoArray(baseURL string, targetPage int, mainChannel chan<- []JobInfo) {
 
 	channel := make(chan JobInfo)
