@@ -1,5 +1,5 @@
 ## Toy project 
 
 ## Used opensource library
-[PuerkitoBio/goquery](github.com/PuerkitoBio/goquery)
+[PuerkitoBio/goquery](https://github.com/PuerkitoBio/goquery)
 
