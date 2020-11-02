@@ -18,11 +18,6 @@ type JobInfo struct {
 	summary  string
 }
 
-type pageButtonInfo struct {
-	url       string
-	buttonNum int
-}
-
 // GetPageNum returns last number of pages
 func GetPageNum(baseURL string) (pageNum int) {
 
