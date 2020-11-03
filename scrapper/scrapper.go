@@ -1,7 +1,6 @@
 package scrapper
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -9,21 +8,19 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// JobInfo includes contents of job card
-type JobInfo struct {
-	id       string
-	title    string
-	location string
-	salary   string
-	summary  string
+// JobCard includes information about a job
+type JobCard struct {
+	ID       string
+	Title    string
+	Location string
+	Salary   string
+	Summary  string
 }
 
 // GetPageNum returns last number of pages
 func GetPageNum(baseURL string) (pageNum int) {
 
-	lastPageURL := urlBuilder(baseURL, 9999)
-
-	fmt.Println("GetPageNum lastPageUrl is ", lastPageURL)
+	lastPageURL := urlBuilder(baseURL, 99999)
 
 	doc := getPageDocObject(lastPageURL)
 
@@ -34,8 +31,10 @@ func GetPageNum(baseURL string) (pageNum int) {
 	})
 
 	if pageNum == 0 {
+
 		log.Fatal("Total size of page is 0... Failed to load pages.")
 	} else {
+
 		log.Printf("There are %d pages.", pageNum)
 	}
 
@@ -43,44 +42,49 @@ func GetPageNum(baseURL string) (pageNum int) {
 }
 
 // RequestJobInfoArray sends JobInfo type array to chanel
-func RequestJobInfoArray(baseURL string, targetPage int, mainChannel chan<- []JobInfo) {
+func RequestJobInfoArray(baseURL string, targetPageNum int, mainChannel chan<- []JobCard) {
 
-	channel := make(chan JobInfo)
+	channel := make(chan JobCard)
 
 	// After waiting response, jobCardArray is sent to channel
-	jobCardArray := []JobInfo{}
+	jobCardArray := new([]JobCard)
 
-	targetURL := urlBuilder(baseURL, targetPage)
+	targetURL := urlBuilder(baseURL, targetPageNum)
 
 	doc := getPageDocObject(targetURL)
 
+	log.Println("Target url is : ", targetURL)
+
 	jobCardNumCounter := 0
-	doc.Find(".jobsearch-SerpJobCard unifiedRow row result clickcard").Each(func(i int, s *goquery.Selection) {
+
+	doc.Find(".jobsearch-SerpJobCard").Each(func(i int, s *goquery.Selection) {
 
 		go scrapJob(s, channel)
-		jobCardNumCounter++
-		fmt.Println("jobCardNumCounter:", jobCardNumCounter)
 
+		jobCardNumCounter++
 	})
 
 	for i := 0; i < jobCardNumCounter; i++ {
 
-		jobCardArray = append(jobCardArray, <-channel)
+		extractedJobCard := <-channel
 
+		*jobCardArray = append(*jobCardArray, extractedJobCard)
 	}
 
-	mainChannel <- jobCardArray
+	mainChannel <- *jobCardArray
 }
 
-func scrapJob(s *goquery.Selection, channel chan<- JobInfo) {
+func scrapJob(s *goquery.Selection, channel chan<- JobCard) {
 
-	jobCard := new(JobInfo)
-	jobCard.title = s.Find("title").Text()
-	jobCard.location = s.Find("sjcl").Text()
-	jobCard.summary = s.Find("summary").Text()
+	jobCard := new(JobCard)
+
+	jobCard.Title = s.Find("title").Text()
+
+	jobCard.Location = s.Find("sjcl").Text()
+
+	jobCard.Summary = s.Find("summary").Text()
 
 	channel <- *jobCard
-
 }
 
 // getPageDocObject returns *goquery.Document object using goquery framework
@@ -102,18 +106,24 @@ func getPageDocObject(targetURL string) (doc *goquery.Document) {
 }
 
 func urlBuilder(baseURL string, targetPage int) (targetURL string) {
-	targetURL = baseURL + "&start=" + strconv.Itoa(targetPage)
+
+	targetURL = baseURL + "&start=" + strconv.Itoa(targetPage*10)
+
 	return
 }
 
 func errorCheck(err error) {
+
 	if err != nil {
+
 		log.Fatal(err)
 	}
 }
 
 func statusCodeCheck(res *http.Response) {
+
 	if res.StatusCode != 200 {
+
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 }
