@@ -78,11 +78,11 @@ func scrapJob(s *goquery.Selection, channel chan<- JobCard) {
 
 	jobCard := new(JobCard)
 
-	jobCard.Title = s.Find("title").Text()
+	jobCard.Title = s.Find(".title").Find("a").Text()
 
-	jobCard.Location = s.Find("sjcl").Text()
+	jobCard.Location = s.Find(".sjcl").Find(".accessible-contrast-color-location").Text()
 
-	jobCard.Summary = s.Find("summary").Text()
+	jobCard.Summary = s.Find(".summary").Text()
 
 	channel <- *jobCard
 }
