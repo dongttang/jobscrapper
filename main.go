@@ -58,6 +58,7 @@ func main() {
 	elapsed := time.Since(start)
 
 	log.Printf("%d items are scrawled in %s sec.", len(jobList), elapsed)
+
 	log.Println("Saved path: ./jobList.csv")
 
 }
