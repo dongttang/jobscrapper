@@ -20,7 +20,10 @@ type JobCard struct {
 // GetPageNum returns last number of pages
 func GetPageNum(baseURL string) (pageNum int) {
 
-	lastPageURL := urlBuilder(baseURL, 99999)
+	// dummyBigNumber is used just for getting last page from target URL
+	const dummyBigNumber int = 99999
+
+	lastPageURL := urlBuilder(baseURL, dummyBigNumber)
 
 	doc := getPageDocObject(lastPageURL)
 
