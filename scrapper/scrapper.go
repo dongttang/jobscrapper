@@ -44,7 +44,7 @@ func GetPageNum(baseURL string) (pageNum int) {
 	return
 }
 
-// RequestJobInfoArray sends JobInfo type array to chanel
+// RequestJobInfoArray sends JobCard type array to chanel
 func RequestJobInfoArray(baseURL string, targetPageNum int, mainChannel chan<- []JobCard) {
 
 	channel := make(chan JobCard)
